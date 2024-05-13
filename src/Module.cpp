@@ -446,7 +446,7 @@ ModuleBasicStatistics::summarize_module(FastqStats &stats) {
       total_bases += i * stats.long_read_length_freq[i - FastqStats::SHORT_READ_THRESHOLD];
   }
 
-  avg_read_length = total_bases / (total_sequences > 0 ? total_sequences : 1.0);
+  avg_read_length = total_bases / (total_sequences > 0u ? total_sequences : 1.0);
 
   // counts bases G and C in each base position
   avg_gc = 0;
@@ -1878,8 +1878,13 @@ Module(ModuleAdapterContent::module_name) {
 
 void
 ModuleAdapterContent::summarize_module(FastqStats &stats) {
-  num_bases = stats.max_read_length > 0 ? max(min(stats.max_read_length, FastqStats::SHORT_READ_THRESHOLD),
-                                                ((shortest_adapter_size >= 1) ? (shortest_adapter_size - 1) : 0)) : 0;
+
+  if(stats.max_read_length > 0u) { // if a non-empty file is provided
+      num_bases = max(min(stats.max_read_length, FastqStats::SHORT_READ_THRESHOLD),
+                      ((shortest_adapter_size >= 1) ? (shortest_adapter_size - 1) : 0));
+  } else {
+      num_bases = 0;
+  }
 
   if (num_bases + 1 >= shortest_adapter_size) { // otherwise this module does not make sense
     adapter_pos_pct.clear();
