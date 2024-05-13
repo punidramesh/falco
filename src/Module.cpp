@@ -445,8 +445,10 @@ ModuleBasicStatistics::summarize_module(FastqStats &stats) {
     else
       total_bases += i * stats.long_read_length_freq[i - FastqStats::SHORT_READ_THRESHOLD];
   }
+  
+  size_t one = 1;
 
-  avg_read_length = total_bases / (total_sequences > 0u ? total_sequences : 1.0);
+  avg_read_length = total_bases / std::max(total_sequences, one);
 
   // counts bases G and C in each base position
   avg_gc = 0;
